@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.UserService;
 
@@ -38,12 +39,6 @@ public class UserController {
 		return service.retrieveUserById(id);
 	}
 	
-	// Create an user
-	@PostMapping("/user/")
-	public void createUser(@RequestBody User_Entity user) {
-		service.createUser(user);
-	}
-	
 	// delete all users
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/users/delete/")
@@ -61,8 +56,13 @@ public class UserController {
 	// update user by id
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@PutMapping("/user/update/{id}/")
-	public void updateUser(@RequestBody User_Entity user, @PathVariable int id) {
+	public void updateUser(@RequestBody UserDTO user, @PathVariable int id) {
 		service.updateUser(user, id);
 	}
 	
+	// Register a new user
+	@PostMapping("/register/user/")
+	public void registerUser(@RequestBody User_Entity user) {
+		service.registerUser(user);
+	}
 }
