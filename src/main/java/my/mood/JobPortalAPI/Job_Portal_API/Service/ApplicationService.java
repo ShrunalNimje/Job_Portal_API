@@ -7,7 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Status;
+import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.ApplicationRepository;
+import my.mood.JobPortalAPI.Job_Portal_API.Repository.JobRepository;
+import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
 
 
 @Service
@@ -15,8 +20,14 @@ public class ApplicationService {
 	
 	ApplicationRepository repository;
 	
-	public ApplicationService(ApplicationRepository repository) {
+	JobRepository jobRepository;
+	
+	UserRepository userRepository;
+	
+	public ApplicationService(ApplicationRepository repository, JobRepository jobRepository, UserRepository userRepository) {
 		this.repository = repository;
+		this.jobRepository = jobRepository;
+		this.userRepository = userRepository;
 	}
 	
 	// get all applications
@@ -31,6 +42,16 @@ public class ApplicationService {
 	
 	// Apply for job
 	public ResponseEntity<String> applyForJob(Application_Entity application) {
+		
+		Job_Entity job = jobRepository.findById(application.getJob().getId())
+				.orElseThrow(() -> new RuntimeException("Job not found!"));
+		
+		User_Entity user = userRepository.findById(application.getUser().getId())
+				.orElseThrow(() -> new RuntimeException("User not found!"));
+		
+		application.setJob(job);
+		application.setUser(user);
+		application.setStatus(Application_Status.APPLIED);
 		repository.save(application);
 		
 		return ResponseEntity.ok("Applied for job successfully with id = " + application.getId());

@@ -30,14 +30,14 @@ public class ApplicationController {
 	}
 	
 	// Retrieve an application by id
-	@GetMapping("/application/{id}/")
+	@GetMapping("/applications/{id}/")
 	public Optional<Application_Entity> getApplicationById(@PathVariable int id) {
 		return service.retrieveApplicationById(id);
 	}
 	
 	// Apply for job
 	@PreAuthorize("hasRole('JOB_SEEKER')")
-	@PostMapping("/application/")
+	@PostMapping("/application/apply/")
 	public void applyForApplication(@RequestBody Application_Entity application) {
 		service.applyForJob(application);
 	}
@@ -50,7 +50,7 @@ public class ApplicationController {
 	}
 	
 	// delete an application by id
-	@PreAuthorize("hasRole('ADMIIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/application/delete/{id}/")
 	public void deleteApplicationById(@PathVariable int id) {
 		service.deleteApplicationById(id);
