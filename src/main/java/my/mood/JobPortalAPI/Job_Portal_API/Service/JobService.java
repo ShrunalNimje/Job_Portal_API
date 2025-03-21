@@ -3,9 +3,12 @@ package my.mood.JobPortalAPI.Job_Portal_API.Service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.JobRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Security.UserNotFoundException;
@@ -13,6 +16,9 @@ import my.mood.JobPortalAPI.Job_Portal_API.Security.UserNotFoundException;
 @Service
 public class JobService {
 
+	@Autowired
+	PasswordEncoder encoder;
+	
 	JobRepository repository;
 	
 	public JobService(JobRepository repository) {
@@ -29,11 +35,11 @@ public class JobService {
 		return repository.findById(id);
 	}
 	
-	// create an user
-	public ResponseEntity<String> createJob(Job_Entity job) {
+	// post an user
+	public ResponseEntity<String> postJob(Job_Entity job) {
 		repository.save(job);
 		
-		return ResponseEntity.ok("job created successfully with id = " + job.getId());
+		return ResponseEntity.ok("job posted successfully with id = " + job.getId());
 	}
 	
 	// delete all jobs
@@ -51,7 +57,7 @@ public class JobService {
 	}
 	
 	// update a job by provided id
-	public ResponseEntity<String> updateJob(Job_Entity updatedJob, int id) {
+	public ResponseEntity<String> updateJob(JobDTO updatedJob, int id) {
 		
 		Optional<Job_Entity> existingJob = retrieveJobById(id);
 		
@@ -61,11 +67,25 @@ public class JobService {
 			
 			job.setId(id);
 			
-			job.setCompany(updatedJob.getCompany());
-			job.setDescription(updatedJob.getDescription());
-			job.setLocation(updatedJob.getLocation());
-			job.setSalary(updatedJob.getSalary());
-			job.setTitle(updatedJob.getTitle());
+			if(updatedJob.getCompany() != null) {
+				job.setCompany(updatedJob.getCompany());
+			}
+			
+			if(updatedJob.getDescription() != null) {
+				job.setDescription(updatedJob.getDescription());
+			}
+			
+			if(updatedJob.getLocation() != null) {
+				job.setLocation(updatedJob.getLocation());
+			}
+			
+			if(updatedJob.getSalary() != 0) {
+				job.setSalary(updatedJob.getSalary());
+			}
+			
+			if(updatedJob.getTitle() != null) {
+				job.setTitle(updatedJob.getTitle());
+			}
 			 
 			repository.save(job);
 			

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.JobService;
 
@@ -31,16 +32,16 @@ public class JobController {
 	}
 	
 	// Retrieve a job by id
-	@GetMapping("/job/{id}/")
+	@GetMapping("/jobs/{id}/")
 	public Optional<Job_Entity> getJobById(@PathVariable int id) {
 		return service.retrieveJobById(id);
 	}
 	
-	// Create a job
+	// Post a job
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PostMapping("/job/")
-	public void createJob(@RequestBody Job_Entity job) {
-		service.createJob(job);
+	public void postJob(@RequestBody Job_Entity job) {
+		service.postJob(job);
 	}
 	
 	// delete all jobs
@@ -60,7 +61,7 @@ public class JobController {
 	// update job by id
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PutMapping("/job/update/{id}/")
-	public void updateJob(@RequestBody Job_Entity job, @PathVariable int id) {
+	public void updateJob(@RequestBody JobDTO job, @PathVariable int id) {
 		service.updateJob(job, id);
 	}
 	
