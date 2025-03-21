@@ -27,6 +27,8 @@ public class SecurityConfiguration {
 		
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/jobs/**").permitAll()
+				.requestMatchers("/register/**").permitAll()
+				.requestMatchers("/applications/**").permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.requestMatchers("/employer/**").hasRole("EMPLOYER")
 				.requestMatchers("/jobseeker/**").hasRole("JOB_SEEKER")
@@ -37,29 +39,29 @@ public class SecurityConfiguration {
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 					)
 			
-			.httpBasic();
+			.httpBasic(httpBasic -> {});
 		
 		return http.build();
 	}
 	
 	@Bean
-	public UserDetailsService userDetailsService() {
+	public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 		
-		UserDetails admin = User.withDefaultPasswordEncoder()
+		UserDetails admin = User.builder()
 				.username("Admin")
-				.password("Admin123")
+				.password(passwordEncoder.encode("Admin123"))
 				.roles("ADMIN")
 				.build();
 		
-		UserDetails employer = User.withDefaultPasswordEncoder()
+		UserDetails employer = User.builder()
 				.username("Employer")
-				.password("Employer123")
+				.password(passwordEncoder.encode("Employer123"))
 				.roles("EMPLOYER")
 				.build();
 		
-		UserDetails jobSeeker = User.withDefaultPasswordEncoder()
+		UserDetails jobSeeker = User.builder()
 				.username("JobSeeker")
-				.password("JobSeeker123")
+				.password(passwordEncoder.encode("JobSeeker123"))
 				.roles("JOB_SEEKER")
 				.build();
 		
