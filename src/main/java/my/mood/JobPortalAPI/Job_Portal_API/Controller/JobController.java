@@ -1,8 +1,10 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
-import java.util.List;
+import java.security.Principal;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +29,8 @@ public class JobController {
 	
 	// Retrieve All jobs
 	@GetMapping("/jobs/")
-	public List<Job_Entity> getAllJobs() {
-		return service.retrieveAllJobs();
+	public Page<Job_Entity> getAllJobs(Pageable pageable) {
+		return service.retrieveAllJobs(pageable);
 	}
 	
 	// Retrieve a job by id
@@ -40,8 +42,8 @@ public class JobController {
 	// Post a job
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PostMapping("/job/")
-	public void postJob(@RequestBody Job_Entity job) {
-		service.postJob(job);
+	public void postJob(@RequestBody Job_Entity job, Principal principal) {
+		service.postJob(job, principal);
 	}
 	
 	// delete all jobs
