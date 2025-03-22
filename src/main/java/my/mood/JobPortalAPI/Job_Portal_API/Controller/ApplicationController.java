@@ -1,16 +1,21 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.ApplicationService;
 
@@ -25,8 +30,8 @@ public class ApplicationController {
 	
 	// Retrieve All applications
 	@GetMapping("/applications/")
-	public List<Application_Entity> getAllApplications() {
-		return service.retrieveAllApplications();
+	public Page<Application_Entity> getAllApplications(Pageable pageable) {
+		return service.retrieveAllApplications(pageable);
 	}
 	
 	// Retrieve an application by id
@@ -35,11 +40,25 @@ public class ApplicationController {
 		return service.retrieveApplicationById(id);
 	}
 	
+	// Get applications for a specific job
+	@PreAuthorize("hasRole('EMPLOYER')")
+	@GetMapping("/applications/job/{jobId}/")
+	public List<Application_Entity> getApplicationByJobId(@PathVariable int jobId) {
+		return service.getApplicationsByJobId(jobId);
+	}
+	
+	// Update application status
+	@PreAuthorize("hasRole('EMPLOYER')")
+	@PutMapping("/application/status/{id}/")
+	public void updateStatus(@PathVariable int id, @RequestBody StatusDTO status) {
+		service.updateApplicationStatus(id, status);
+	}
+	
 	// Apply for job
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@PostMapping("/application/apply/")
-	public void applyForApplication(@RequestBody Application_Entity application) {
-		service.applyForJob(application);
+	public void applyForApplication(@RequestBody Application_Entity application, Principal principal) {
+		service.applyForJob(application, principal);
 	}
 	
 	// delete all applications
