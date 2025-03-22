@@ -1,8 +1,10 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +30,8 @@ public class UserController {
 	// Retrieve All users
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/users/")
-	public List<User_Entity> getAllUsers() {
-		return service.retrieveAllUsers();
+	public Page<User_Entity> getAllUsers(Pageable pageable) {
+		return service.retrieveAllUsers(pageable);
 	}
 	
 	// Retrieve an user by id
@@ -57,7 +59,7 @@ public class UserController {
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@PutMapping("/user/update/{id}/")
 	public void updateUser(@RequestBody UserDTO user, @PathVariable int id) {
-		service.updateUser(user, id);
+		service.updateUserById(user, id);
 	}
 	
 	// Register a new user
@@ -65,4 +67,16 @@ public class UserController {
 	public void registerUser(@RequestBody User_Entity user) {
 		service.registerUser(user);
 	}
+	
+	@PreAuthorize("isAuthenticated()")
+    @GetMapping("/user/profile/")
+    public User_Entity getUserProfile() {
+        return service.getLoggedInProfile();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/user/profile/update/")
+    public ResponseEntity<String> updateUserProfile(@RequestBody UserDTO updatedUser) {
+        return service.updateUser(updatedUser);
+    }
 }

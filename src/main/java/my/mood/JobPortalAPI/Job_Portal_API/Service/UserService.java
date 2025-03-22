@@ -1,10 +1,12 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +28,8 @@ public class UserService {
 	}
 	
 	// get all users
-	public List<User_Entity> retrieveAllUsers() {
-		return repository.findAll();
+	public Page<User_Entity> retrieveAllUsers(Pageable pageable) {
+		return repository.findAll(pageable);
 	}
 	
 	// get an user by provided id
@@ -44,13 +46,17 @@ public class UserService {
 		
 	// delete an user by provided id
 	public ResponseEntity<String> deleteUserById(int id) {
+		
+		User_Entity user = repository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found with id = " + id));
+		
 		repository.deleteById(id);
 		
 		return ResponseEntity.ok("User deleted successfully with id = " + id);
 	}
 	
 	// update an user by provided id
-	public ResponseEntity<String> updateUser(UserDTO updatedUser, int id) {
+	public ResponseEntity<String> updateUserById(UserDTO updatedUser, int id) {
 		
 		Optional<User_Entity> existingUser = retrieveUserById(id);
 		
@@ -75,6 +81,35 @@ public class UserService {
 		else {
 			throw new UserNotFoundException("User not found with id = " + id);
 		}
+	}
+	
+	// update logged in user profile
+	public ResponseEntity<String> updateUser(UserDTO updatedUser) {
+		
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		User_Entity user = repository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User not found!"));
+			
+		if(updatedUser.getName() != null) {
+			user.setName(updatedUser.getName());
+		}
+		
+		if(updatedUser.getPassword() != null) {
+			user.setPassword(encoder.encode(updatedUser.getPassword()));
+		}
+		
+		repository.save(user);
+		
+		return ResponseEntity.ok("User updated successfully!");
+	}
+	
+	// get Logged in user profile
+	public User_Entity getLoggedInProfile() {
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		User_Entity user = repository.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User not found!"));
+		
+		return user;
 	}
 	
 	// register a new user
