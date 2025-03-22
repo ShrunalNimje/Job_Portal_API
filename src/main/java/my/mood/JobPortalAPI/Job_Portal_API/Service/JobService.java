@@ -1,16 +1,20 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Service;
 
-import java.util.List;
+import java.security.Principal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.JobRepository;
+import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Security.UserNotFoundException;
 
 @Service
@@ -21,13 +25,17 @@ public class JobService {
 	
 	JobRepository repository;
 	
-	public JobService(JobRepository repository) {
+	UserRepository userRepository;
+	
+	public JobService(JobRepository repository, PasswordEncoder encoder, UserRepository userRepository) {
 		this.repository = repository;
+		this.encoder = encoder;
+		this.userRepository = userRepository;
 	}
 	
 	// get all jobs
-	public List<Job_Entity> retrieveAllJobs() {
-		return repository.findAll();
+	public Page<Job_Entity> retrieveAllJobs(Pageable pageable) {
+		return repository.findAll(pageable);
 	}
 	
 	// get a job by provided id
@@ -35,8 +43,20 @@ public class JobService {
 		return repository.findById(id);
 	}
 	
-	// post an user
-	public ResponseEntity<String> postJob(Job_Entity job) {
+	// post an job
+	public ResponseEntity<String> postJob(Job_Entity job, Principal principal) {
+		
+		Optional<Job_Entity> existingJob = repository.findById(job.getId());
+		
+		if(existingJob.isPresent()) {
+			return ResponseEntity.badRequest().body("Job is already posted with id = " + job.getId());
+		}
+		
+		String loggedInUser = principal.getName();
+		User_Entity employer = userRepository.findByEmail(loggedInUser)
+				.orElseThrow(() -> new UserNotFoundException("Employer not found!"));
+		
+		job.setPostedBy(employer);
 		repository.save(job);
 		
 		return ResponseEntity.ok("job posted successfully with id = " + job.getId());
@@ -51,6 +71,10 @@ public class JobService {
 		
 	// delete a job by provided id
 	public ResponseEntity<String> deleteJobById(int id) {
+		
+		Job_Entity job = repository.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found with id = " + id));
+		
 		repository.deleteById(id);
 		
 		return ResponseEntity.ok("Job deleted successfully with id = " + id);
