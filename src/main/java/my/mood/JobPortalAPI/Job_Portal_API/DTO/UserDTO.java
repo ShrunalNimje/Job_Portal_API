@@ -1,12 +1,18 @@
 package my.mood.JobPortalAPI.Job_Portal_API.DTO;
 
+import jakarta.validation.constraints.Size;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Role;
 
 public class UserDTO {
 
 	private int id;
+	
+	@Size(min = 5, message = "Name cannot less than 5 characters!")
 	private String name;
+	
+	@Size(min = 8, message = "Password cannot less than 8 characters!")
 	private String password;
+	
 	private String email;
 	private User_Role role;
 	

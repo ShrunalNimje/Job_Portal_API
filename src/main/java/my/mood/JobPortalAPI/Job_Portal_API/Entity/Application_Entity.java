@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,7 @@ public class Application_Entity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User_Entity user;
 	
+	@NotNull(message = "Job (Job Id) cannot be null!")
 	@ManyToOne
     @JoinColumn(name = "job_id", nullable = false)
     private Job_Entity job;

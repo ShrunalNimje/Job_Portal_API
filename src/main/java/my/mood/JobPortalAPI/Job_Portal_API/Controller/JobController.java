@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.JobService;
@@ -35,14 +36,14 @@ public class JobController {
 	
 	// Retrieve a job by id
 	@GetMapping("/jobs/{id}/")
-	public Optional<Job_Entity> getJobById(@PathVariable int id) {
+	public Optional<Job_Entity> getJobById(@Valid @PathVariable int id) {
 		return service.retrieveJobById(id);
 	}
 	
 	// Post a job
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PostMapping("/job/")
-	public void postJob(@RequestBody Job_Entity job, Principal principal) {
+	public void postJob(@Valid @RequestBody Job_Entity job, Principal principal) {
 		service.postJob(job, principal);
 	}
 	
@@ -56,14 +57,14 @@ public class JobController {
 	// delete a job by id
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@DeleteMapping("/job/delete/{id}/")
-	public void deleteJobById(@PathVariable int id) {
+	public void deleteJobById(@Valid @PathVariable int id) {
 		service.deleteJobById(id);
 	}
 	
 	// update job by id
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PutMapping("/job/update/{id}/")
-	public void updateJob(@RequestBody JobDTO job, @PathVariable int id) {
+	public void updateJob(@Valid @RequestBody JobDTO job, @Valid @PathVariable int id) {
 		service.updateJob(job, id);
 	}
 	

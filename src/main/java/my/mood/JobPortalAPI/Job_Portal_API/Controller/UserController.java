@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.UserService;
@@ -37,7 +38,7 @@ public class UserController {
 	// Retrieve an user by id
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@GetMapping("/user/{id}/")
-	public Optional<User_Entity> getUserById(@PathVariable int id) {
+	public Optional<User_Entity> getUserById(@Valid @PathVariable int id) {
 		return service.retrieveUserById(id);
 	}
 	
@@ -51,20 +52,20 @@ public class UserController {
 	// delete an user by id
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@DeleteMapping("/user/delete/{id}/")
-	public void deleteUserById(@PathVariable int id) {
+	public void deleteUserById(@Valid @PathVariable int id) {
 		service.deleteUserById(id);
 	}
 	
 	// update user by id
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@PutMapping("/user/update/{id}/")
-	public void updateUser(@RequestBody UserDTO user, @PathVariable int id) {
+	public void updateUser(@Valid @RequestBody UserDTO user, @Valid @PathVariable int id) {
 		service.updateUserById(user, id);
 	}
 	
 	// Register a new user
 	@PostMapping("/register/user/")
-	public void registerUser(@RequestBody User_Entity user) {
+	public void registerUser(@Valid @RequestBody User_Entity user) {
 		service.registerUser(user);
 	}
 	
@@ -76,7 +77,7 @@ public class UserController {
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/user/profile/update/")
-    public ResponseEntity<String> updateUserProfile(@RequestBody UserDTO updatedUser) {
+    public ResponseEntity<String> updateUserProfile(@Valid @RequestBody UserDTO updatedUser) {
         return service.updateUser(updatedUser);
     }
 }

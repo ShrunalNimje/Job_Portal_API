@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.ApplicationService;
@@ -36,28 +37,28 @@ public class ApplicationController {
 	
 	// Retrieve an application by id
 	@GetMapping("/applications/{id}/")
-	public Optional<Application_Entity> getApplicationById(@PathVariable int id) {
+	public Optional<Application_Entity> getApplicationById(@Valid @PathVariable int id) {
 		return service.retrieveApplicationById(id);
 	}
 	
 	// Get applications for a specific job
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@GetMapping("/applications/job/{jobId}/")
-	public List<Application_Entity> getApplicationByJobId(@PathVariable int jobId) {
+	public List<Application_Entity> getApplicationByJobId(@Valid @PathVariable int jobId) {
 		return service.getApplicationsByJobId(jobId);
 	}
 	
 	// Update application status
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@PutMapping("/application/status/{id}/")
-	public void updateStatus(@PathVariable int id, @RequestBody StatusDTO status) {
+	public void updateStatus(@Valid @PathVariable int id, @Valid @RequestBody StatusDTO status) {
 		service.updateApplicationStatus(id, status);
 	}
 	
 	// Apply for job
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@PostMapping("/application/apply/")
-	public void applyForApplication(@RequestBody Application_Entity application, Principal principal) {
+	public void applyForApplication(@Valid @RequestBody Application_Entity application, Principal principal) {
 		service.applyForJob(application, principal);
 	}
 	
@@ -71,7 +72,7 @@ public class ApplicationController {
 	// delete an application by id
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/application/delete/{id}/")
-	public void deleteApplicationById(@PathVariable int id) {
+	public void deleteApplicationById(@Valid @PathVariable int id) {
 		service.deleteApplicationById(id);
 	}
 	

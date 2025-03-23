@@ -1,15 +1,25 @@
 package my.mood.JobPortalAPI.Job_Portal_API.DTO;
 
+import jakarta.validation.constraints.Size;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 
 public class JobDTO {
 
 	private int id;
+	
+	@Size(min = 5, message = "Title cannot be less than 5 characters!")
 	private String title;
+	
+	@Size(min = 20, message = "Description must contains atleast 20 characters!")
 	private String description;
+	
 	private String company;
+	
 	private int salary;
+	
+	@Size(min = 5, message = "Location cannot be less than 5 characters!")
 	private String location;
+	
 	private User_Entity postedBy;
 	
 	public JobDTO() {

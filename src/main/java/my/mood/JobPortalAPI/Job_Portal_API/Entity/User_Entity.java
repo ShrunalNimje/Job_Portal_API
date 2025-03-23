@@ -10,7 +10,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,10 +26,19 @@ public class User_Entity {
 	@GeneratedValue
 	private int id;
 	
+	@NotBlank(message = "Name cannot be empty!")
+	@Size(min = 5, message = "Name cannot be less than 5 characters!")
 	private String name;
+	
+	@NotBlank(message = "Email cannot be empty!")
+	@Email(message = "Email should be valid!")
 	private String email;
+	
+	@NotBlank(message = "Password cannot be empty!")
+	@Size(min = 8, message = "Password must contains atleast 8 characters!")
 	private String password;
 	
+	@NotNull(message = "Role cannot be null!")
 	@Enumerated(EnumType.STRING)
 	private User_Role role;
 	

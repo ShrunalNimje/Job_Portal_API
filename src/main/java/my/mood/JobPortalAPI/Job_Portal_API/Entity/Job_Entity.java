@@ -10,6 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,10 +25,22 @@ public class Job_Entity {
 	@GeneratedValue
 	private int id;
 	
+	@NotBlank(message = "Title cannot be empty!")
+	@Size(min = 5, message = "Title cannot be less than 5 characters!")
 	private String title;
+	
+	@NotBlank(message = "Description cannot be empty!")
+	@Size(min = 20, message = "Description must contains atleast 20 characters!")
 	private String description;
+	
+	@NotBlank(message = "Company cannot be empty!")
 	private String company;
+	
+	@Min(value = 1, message = "Salary must be greater than zero!")
 	private int salary;
+	
+	@NotBlank(message = "Location cannot be empty!")
+	@Size(min = 5, message = "Location cannot be less than 5 characters!")
 	private String location;
 	
 	@ManyToOne
