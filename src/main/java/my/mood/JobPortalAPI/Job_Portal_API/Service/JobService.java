@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Exception.UserNotFoundException;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.JobRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
-import my.mood.JobPortalAPI.Job_Portal_API.Security.UserNotFoundException;
 
 @Service
 public class JobService {

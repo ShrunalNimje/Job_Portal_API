@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
-import my.mood.JobPortalAPI.Job_Portal_API.Security.UserNotFoundException;
+import my.mood.JobPortalAPI.Job_Portal_API.Exception.UserNotFoundException;
 
 @Service
 public class UserService {
