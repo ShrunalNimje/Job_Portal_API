@@ -17,6 +17,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.ApplicationRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.JobRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
+import my.mood.JobPortalAPI.Job_Portal_API.Security.CustomUserDetails;
 
 @Service
 public class ApplicationService {
@@ -47,6 +48,16 @@ public class ApplicationService {
 	public List<Application_Entity> getApplicationsByJobId(int jobId) {
 		return repository.findByJobId(jobId);
 	}
+	// Get application list for a specific user
+	public List<Application_Entity> getApplicationsByUserId(int userId) {
+		return repository.findByUserId(userId);
+	}
+	
+	public ResponseEntity<List<Application_Entity>> getCurrentUserApplications( CustomUserDetails userDetails) {
+        int userId = userDetails.getId();
+        List<Application_Entity> applications = getApplicationsByUserId(userId);
+        return ResponseEntity.ok(applications);
+    }
 	
 	// Apply for job
 	public ResponseEntity<String> applyForJob(Application_Entity application, Principal principal) {

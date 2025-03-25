@@ -6,7 +6,9 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Security.CustomUserDetails;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.ApplicationService;
 
 @RestController
@@ -48,6 +51,12 @@ public class ApplicationController {
 		return service.getApplicationsByJobId(jobId);
 	}
 	
+	// Get application list for a specific user
+	@PreAuthorize("hasRole('JOB_SEEKER')")
+	@GetMapping("/applications/user/")
+	public ResponseEntity<List<Application_Entity>> getApplicationByUserId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+		return service.getCurrentUserApplications(customUserDetails);
+	}
 	// Update application status
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@PutMapping("/application/status/{id}/")

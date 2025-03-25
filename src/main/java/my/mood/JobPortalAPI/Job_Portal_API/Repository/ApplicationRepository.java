@@ -13,6 +13,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
 public interface ApplicationRepository extends JpaRepository<Application_Entity, Integer>{
 
 	public Page<Application_Entity> findAll(Pageable pageable);
-	List<Application_Entity> findByJobId(int jobId);
+	public List<Application_Entity> findByJobId(int jobId);
+	public List<Application_Entity> findByUserId(int userId);
 	
 }
