@@ -34,6 +34,9 @@ public class SecurityConfiguration {
 				.requestMatchers("/jobs/**").permitAll()
 				.requestMatchers("/register/**").permitAll()
 				.requestMatchers("/applications/**").permitAll()
+				.requestMatchers("/v3/api-docs/**", 
+	                    "/swagger-ui/**", 
+	                    "/swagger-ui.html").permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.requestMatchers("/employer/**").hasRole("EMPLOYER")
 				.requestMatchers("/jobseeker/**").hasRole("JOB_SEEKER")
