@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
@@ -24,6 +26,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Security.CustomUserDetails;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.ApplicationService;
 
 @RestController
+@Tag(name = "Application APIs", description = "Retrieve, Update, Delete, Apply for Applications")
 public class ApplicationController {
 	
 	ApplicationService service;
@@ -33,18 +36,21 @@ public class ApplicationController {
 	}
 	
 	// Retrieve All applications
+	@Operation(summary = "Retrieve all applications", description = "Get all list of applications applied by job seeker")
 	@GetMapping("/applications/")
 	public Page<Application_Entity> getAllApplications(Pageable pageable) {
 		return service.retrieveAllApplications(pageable);
 	}
 	
 	// Retrieve an application by id
+	@Operation(summary = "Retrieve an application", description = "Get an application provided by application id")
 	@GetMapping("/applications/{id}/")
 	public Optional<Application_Entity> getApplicationById(@Valid @PathVariable int id) {
 		return service.retrieveApplicationById(id);
 	}
 	
 	// Get applications for a specific job
+	@Operation(summary = "Retrieve all applications for specific job", description = "Get all list of applications for a specific job posted by employer")
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@GetMapping("/applications/job/{jobId}/")
 	public List<Application_Entity> getApplicationByJobId(@Valid @PathVariable int jobId) {
@@ -52,12 +58,14 @@ public class ApplicationController {
 	}
 	
 	// Get application list for a specific user
+	@Operation(summary = "Retrieve all applications for specific user", description = "Get all list of applications for specific user applied by job seeker")
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@GetMapping("/applications/user/")
 	public ResponseEntity<List<Application_Entity>> getApplicationByUserId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 		return service.getCurrentUserApplications(customUserDetails);
 	}
 	// Update application status
+	@Operation(summary = "Update application status", description = "Update a status of perticular job provided by application id")
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@PutMapping("/application/status/{id}/")
 	public void updateStatus(@Valid @PathVariable int id, @Valid @RequestBody StatusDTO status) {
@@ -65,6 +73,7 @@ public class ApplicationController {
 	}
 	
 	// Apply for job
+	@Operation(summary = "Apply for job", description = "Post an application or apply for job provided by user id and job id")
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@PostMapping("/application/apply/")
 	public void applyForApplication(@Valid @RequestBody Application_Entity application, Principal principal) {
@@ -72,6 +81,7 @@ public class ApplicationController {
 	}
 	
 	// delete all applications
+	@Operation(summary = "Delete all applications", description = "Delete all list of applied applications posted by employer")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/applications/delete/")
 	public void deleteAllApplications() {
@@ -79,6 +89,7 @@ public class ApplicationController {
 	}
 	
 	// delete an application by id
+	@Operation(summary = "Delete an application", description = "Delete an applied application provided by application id")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/application/delete/{id}/")
 	public void deleteApplicationById(@Valid @PathVariable int id) {
