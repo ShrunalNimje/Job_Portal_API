@@ -1,7 +1,10 @@
 package my.mood.JobPortalAPI.Job_Portal_API.OpenAPI;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
 import java.util.Arrays;
@@ -18,11 +21,19 @@ public class OpenAPIConfiguration {
                 .info(new Info()
                         .title("Job Portal API")
                         .version("1.0")
-                        .description("API documentation for the Job Portal project.")
-                        )
+                        .description("A RESTful API for managing job listings, applications, and user authentication.")
+                        .contact(new Contact().name("Shrunal Nimje").email("shrunalnimje@gmail.com")))
+                
                 .servers(Arrays.asList(new Server().url("http://localhost:8080").description("local"),
-                		new Server().url("http://localhost:8082").description("live"))
-                		);
-        
+                		new Server().url("http://localhost:8082").description("live")))
+                
+                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
+                
+                .components(new io.swagger.v3.oas.models.Components()
+                    .addSecuritySchemes("basicAuth",
+                        new SecurityScheme()
+                            .type(SecurityScheme.Type.HTTP)
+                            .scheme("basic")));
+ 
     }
 }
