@@ -1,5 +1,6 @@
 package my.mood.JobPortalAPI.Job_Portal_API.OpenAPI;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -27,13 +28,14 @@ public class OpenAPIConfiguration {
                 .servers(Arrays.asList(new Server().url("http://localhost:8080").description("local"),
                 		new Server().url("http://localhost:8082").description("live")))
                 
-                .addSecurityItem(new SecurityRequirement().addList("basicAuth"))
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 
-                .components(new io.swagger.v3.oas.models.Components()
-                    .addSecuritySchemes("basicAuth",
+                .components(new Components()
+                    .addSecuritySchemes("Bearer Authentication",
                         new SecurityScheme()
                             .type(SecurityScheme.Type.HTTP)
-                            .scheme("basic")));
+                            .scheme("bearer")
+                            .bearerFormat("JWT")));
  
     }
 }
