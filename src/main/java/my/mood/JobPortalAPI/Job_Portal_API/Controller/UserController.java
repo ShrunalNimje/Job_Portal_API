@@ -91,4 +91,12 @@ public class UserController {
     public ResponseEntity<String> updateUserProfile(@Valid @RequestBody UserDTO updatedUser) {
         return service.updateUser(updatedUser);
     }
+	
+	@Operation(summary = "Login an user", description = "Login an user by giving right credentials")
+	@PostMapping("/login/")
+	public ResponseEntity<String> login(@RequestBody UserDTO user) {
+		String token = service.verify(user);
+		return ResponseEntity.ok(token);
+	}
+	
 }

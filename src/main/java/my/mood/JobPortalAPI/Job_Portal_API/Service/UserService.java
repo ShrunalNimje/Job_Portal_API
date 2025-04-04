@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,10 +25,21 @@ public class UserService {
 	@Autowired
 	PasswordEncoder encoder;
 	
+	@Autowired
 	UserRepository repository;
 	
-	public UserService(UserRepository repository) {
+	@Autowired
+	AuthenticationManager authManager;
+	
+	@Autowired
+	JWTService jwtService;
+	
+	public UserService(UserRepository repository, PasswordEncoder encoder, 
+			AuthenticationManager authManager, JWTService jwtService) {
 		this.repository = repository;
+		this.encoder = encoder;
+		this.authManager = authManager;
+		this.jwtService = jwtService;
 	}
 	
 	// get all users
@@ -129,6 +144,18 @@ public class UserService {
 		repository.save(newUser);
 		
 		return ResponseEntity.ok("User registerd successfully with id = " + user.getId());
+	}
+	
+	// Login an user
+	public String verify(UserDTO user) {
+		Authentication authentication = authManager.authenticate(
+				new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())); 
+		
+		if(authentication.isAuthenticated()) {
+			return jwtService.generateToken(user.getEmail());
+		}
+		
+		throw new BadCredentialsException("Invalid email and password");
 	}
 	
 }
