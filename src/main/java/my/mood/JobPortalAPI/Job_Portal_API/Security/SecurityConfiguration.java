@@ -1,5 +1,6 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,13 +13,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
 		
+	@Autowired
 	CustomUserDetailsService customUserDetailsService;
+	
+	@Autowired
+	JWTFilter jwtFilter;
 	
 	public SecurityConfiguration(CustomUserDetailsService customUserDetailsService) {
 		this.customUserDetailsService = customUserDetailsService;
@@ -37,6 +43,7 @@ public class SecurityConfiguration {
 				.requestMatchers("/v3/api-docs/**", 
 	                    "/swagger-ui/**", 
 	                    "/swagger-ui.html").permitAll()
+				.requestMatchers("/login/**").permitAll()
 				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.requestMatchers("/employer/**").hasRole("EMPLOYER")
 				.requestMatchers("/jobseeker/**").hasRole("JOB_SEEKER")
@@ -46,10 +53,10 @@ public class SecurityConfiguration {
 			.sessionManagement(session -> session
 					.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 					)
+					
+			.userDetailsService(customUserDetailsService)
 			
-			.httpBasic(httpBasic -> {})
-		
-			.userDetailsService(customUserDetailsService);
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();
 	}
