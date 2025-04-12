@@ -48,6 +48,7 @@ public class ApplicationService {
 	public List<Application_Entity> getApplicationsByJobId(int jobId) {
 		return repository.findByJobId(jobId);
 	}
+	
 	// Get application list for a specific user
 	public List<Application_Entity> getApplicationsByUserId(int userId) {
 		return repository.findByUserId(userId);
