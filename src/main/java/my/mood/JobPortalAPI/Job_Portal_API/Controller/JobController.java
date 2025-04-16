@@ -3,8 +3,10 @@ package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 import java.security.Principal;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Service.JobService;
 @Tag(name = "Job APIs", description = "Retrieve, Post, Update and Delete Jobs")
 public class JobController {
 	
+	@Autowired
 	JobService service;
 	
 	public JobController(JobService service) {
@@ -49,32 +52,32 @@ public class JobController {
 	@Operation(summary = "Post a job", description = "post a job by employer or admin")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PostMapping("/job/")
-	public void postJob(@Valid @RequestBody Job_Entity job, Principal principal) {
-		service.postJob(job, principal);
+	public ResponseEntity<String> postJob(@Valid @RequestBody Job_Entity job, Principal principal) {
+		return service.postJob(job, principal);
 	}
 	
 	// delete all jobs
 	@Operation(summary = "Delete all jobs", description = "Delete all list of jobs by employer or admin")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@DeleteMapping("/jobs/delete/")
-	public void deleteAllJobs() {
-		service.deleteAlljobs();
+	public ResponseEntity<String> deleteAllJobs() {
+		return service.deleteAlljobs();
 	}
 	
 	// delete a job by id
 	@Operation(summary = "Delete a job", description = "Delete a job provided by job id")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@DeleteMapping("/job/delete/{id}/")
-	public void deleteJobById(@Valid @PathVariable int id) {
-		service.deleteJobById(id);
+	public ResponseEntity<String> deleteJobById(@Valid @PathVariable int id) {
+		return service.deleteJobById(id);
 	}
 	
 	// update job by id
 	@Operation(summary = "Update a job", description = "Update a job provided by job id")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PutMapping("/job/update/{id}/")
-	public void updateJob(@Valid @RequestBody JobDTO job, @Valid @PathVariable int id) {
-		service.updateJob(job, id);
+	public ResponseEntity<String> updateJob(@Valid @RequestBody JobDTO job, @Valid @PathVariable int id) {
+		return service.updateJob(job, id);
 	}
 	
 }

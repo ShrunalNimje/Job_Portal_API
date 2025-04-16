@@ -4,6 +4,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Service.ApplicationService;
 @Tag(name = "Application APIs", description = "Retrieve, Update, Delete, Apply for Applications")
 public class ApplicationController {
 	
+	@Autowired
 	ApplicationService service;
 	
 	public ApplicationController(ApplicationService service) {
@@ -64,36 +66,37 @@ public class ApplicationController {
 	public ResponseEntity<List<Application_Entity>> getApplicationByUserId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
 		return service.getCurrentUserApplications(customUserDetails);
 	}
+	
 	// Update application status
 	@Operation(summary = "Update application status", description = "Update a status of perticular job provided by application id")
 	@PreAuthorize("hasRole('EMPLOYER')")
 	@PutMapping("/application/status/{id}/")
-	public void updateStatus(@Valid @PathVariable int id, @Valid @RequestBody StatusDTO status) {
-		service.updateApplicationStatus(id, status);
+	public ResponseEntity<String> updateStatus(@Valid @PathVariable int id, @Valid @RequestBody StatusDTO status) {
+		return service.updateApplicationStatus(id, status);
 	}
 	
 	// Apply for job
 	@Operation(summary = "Apply for job", description = "Post an application or apply for job provided by user id and job id")
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@PostMapping("/application/apply/")
-	public void applyForApplication(@Valid @RequestBody Application_Entity application, Principal principal) {
-		service.applyForJob(application, principal);
+	public ResponseEntity<String> applyForApplication(@Valid @RequestBody Application_Entity application, Principal principal) {
+		return service.applyForJob(application, principal);
 	}
 	
 	// delete all applications
 	@Operation(summary = "Delete all applications", description = "Delete all list of applied applications posted by employer")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/applications/delete/")
-	public void deleteAllApplications() {
-		service.deleteAllApplications();
+	public ResponseEntity<String> deleteAllApplications() {
+		return service.deleteAllApplications();
 	}
 	
 	// delete an application by id
 	@Operation(summary = "Delete an application", description = "Delete an applied application provided by application id")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/application/delete/{id}/")
-	public void deleteApplicationById(@Valid @PathVariable int id) {
-		service.deleteApplicationById(id);
+	public ResponseEntity<String> deleteApplicationById(@Valid @PathVariable int id) {
+		return service.deleteApplicationById(id);
 	}
 	
 }

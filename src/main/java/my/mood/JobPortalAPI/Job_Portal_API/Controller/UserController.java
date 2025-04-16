@@ -2,6 +2,7 @@ package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import my.mood.JobPortalAPI.Job_Portal_API.Service.UserService;
 @Tag(name = "User APIs", description = "Retrieve, Update, Delete, Register and View Profile of User")
 public class UserController {
 	
+	@Autowired
 	UserService service;
 	
 	public UserController(UserService service) {
@@ -51,33 +53,34 @@ public class UserController {
 	@Operation(summary = "Delete all users", description = "Delete all list of users with thier roles")
 	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/users/delete/")
-	public void deleteAllUsers() {
-		service.deleteAllUsers();
+	public ResponseEntity<String> deleteAllUsers() {
+		return service.deleteAllUsers();
 	}
 	
 	// delete an user by id
 	@Operation(summary = "Delete an user", description = "Delete an user provided by unique id")
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@DeleteMapping("/user/delete/{id}/")
-	public void deleteUserById(@Valid @PathVariable int id) {
-		service.deleteUserById(id);
+	public ResponseEntity<String> deleteUserById(@Valid @PathVariable int id) {
+		return service.deleteUserById(id);
 	}
 	
 	// update user by id
 	@Operation(summary = "Update an user", description = "Update an user provided by unique id")
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@PutMapping("/user/update/{id}/")
-	public void updateUser(@Valid @RequestBody UserDTO user, @Valid @PathVariable int id) {
-		service.updateUserById(user, id);
+	public ResponseEntity<String> updateUser(@Valid @RequestBody UserDTO user, @Valid @PathVariable int id) {
+		return service.updateUserById(user, id);
 	}
 	
 	// Register a new user
 	@Operation(summary = "Register a new user", description = "Register a new user provided by unique id, name, email, password and role based access")
 	@PostMapping("/register/user/")
-	public void registerUser(@Valid @RequestBody User_Entity user) {
-		service.registerUser(user);
+	public ResponseEntity<String> registerUser(@Valid @RequestBody User_Entity user) {
+		return service.registerUser(user);
 	}
 	
+	// Get logged-in user profile
 	@Operation(summary = "View user profile", description = "View user profile by authentication")
 	@PreAuthorize("isAuthenticated()")
     @GetMapping("/user/profile/")
@@ -85,6 +88,7 @@ public class UserController {
         return service.getLoggedInProfile();
     }
 
+	// Update logged-in user profile
 	@Operation(summary = "Update user profile", description = "Update user profile by authentication")
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/user/profile/update/")
@@ -92,6 +96,7 @@ public class UserController {
         return service.updateUser(updatedUser);
     }
 	
+	// login user
 	@Operation(summary = "Login an user", description = "Login an user by giving right credentials")
 	@PostMapping("/login/")
 	public ResponseEntity<String> login(@RequestBody UserDTO user) {
