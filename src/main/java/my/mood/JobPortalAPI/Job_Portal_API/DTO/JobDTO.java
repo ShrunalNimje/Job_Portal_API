@@ -1,11 +1,9 @@
 package my.mood.JobPortalAPI.Job_Portal_API.DTO;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
-import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
 
 public class JobDTO {
-
-	private int id;
 	
 	@Size(min = 5, message = "Title cannot be less than 5 characters!")
 	private String title;
@@ -15,35 +13,23 @@ public class JobDTO {
 	
 	private String company;
 	
-	private int salary;
+	@Min(value = 1, message = "Salary cannot less than 1 rupees")
+	private Integer salary;
 	
 	@Size(min = 5, message = "Location cannot be less than 5 characters!")
 	private String location;
-	
-	private User_Entity postedBy;
-	
+		
 	public JobDTO() {
 		
 	}
 
-	public JobDTO(int id, String title, String description, String company, int salary, String location,
-			User_Entity postedBy) {
+	public JobDTO(String title, String description, String company, Integer salary, String location) {
 		super();
-		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.company = company;
 		this.salary = salary;
 		this.location = location;
-		this.postedBy = postedBy;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getTitle() {
@@ -70,11 +56,11 @@ public class JobDTO {
 		this.company = company;
 	}
 
-	public int getSalary() {
+	public Integer getSalary() {
 		return salary;
 	}
 
-	public void setSalary(int salary) {
+	public void setSalary(Integer salary) {
 		this.salary = salary;
 	}
 
@@ -84,14 +70,6 @@ public class JobDTO {
 
 	public void setLocation(String location) {
 		this.location = location;
-	}
-
-	public User_Entity getPostedBy() {
-		return postedBy;
-	}
-
-	public void setPostedBy(User_Entity postedBy) {
-		this.postedBy = postedBy;
 	}
 	
 }

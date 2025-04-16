@@ -17,11 +17,11 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
-    public int getId() {  // ✅ Get user ID
+    public int getId() {
         return user.getId();
     }
 
-    public String getRole() {  // ✅ Get user role
+    public String getRole() {
         return user.getRole().name();
     }
 

@@ -1,11 +1,9 @@
 package my.mood.JobPortalAPI.Job_Portal_API.DTO;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
-import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Role;
 
 public class UserDTO {
-
-	private int id;
 	
 	@Size(min = 5, message = "Name cannot less than 5 characters!")
 	private String name;
@@ -13,28 +11,18 @@ public class UserDTO {
 	@Size(min = 8, message = "Password cannot less than 8 characters!")
 	private String password;
 	
+	@Email(message = "Email should be valid!")
 	private String email;
-	private User_Role role;
 	
 	public UserDTO() {
 		
 	}
 
-	public UserDTO(int id, String name, String password, String email, User_Role role) {
+	public UserDTO(String name, String password, String email) {
 		super();
-		this.id = id;
 		this.name = name;
 		this.password = password;
 		this.email = email;
-		this.role = role;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -59,14 +47,6 @@ public class UserDTO {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public User_Role getRole() {
-		return role;
-	}
-
-	public void setRole(User_Role role) {
-		this.role = role;
 	}
 	
 }

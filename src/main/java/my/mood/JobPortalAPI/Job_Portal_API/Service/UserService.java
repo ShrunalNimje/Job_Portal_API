@@ -62,7 +62,7 @@ public class UserService {
 	// delete an user by provided id
 	public ResponseEntity<String> deleteUserById(int id) {
 		
-		User_Entity user = repository.findById(id)
+		repository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("User not found with id = " + id));
 		
 		repository.deleteById(id);
@@ -143,7 +143,7 @@ public class UserService {
 		newUser.setPassword(encoder.encode(user.getPassword()));
 		repository.save(newUser);
 		
-		return ResponseEntity.ok("User registerd successfully with id = " + user.getId());
+		return ResponseEntity.ok("User registerd successfully with id = " + newUser.getId());
 	}
 	
 	// Login an user

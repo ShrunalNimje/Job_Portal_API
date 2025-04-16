@@ -72,7 +72,7 @@ public class JobService {
 	// delete a job by provided id
 	public ResponseEntity<String> deleteJobById(int id) {
 		
-		Job_Entity job = repository.findById(id)
+		repository.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("User not found with id = " + id));
 		
 		repository.deleteById(id);
@@ -103,7 +103,7 @@ public class JobService {
 				job.setLocation(updatedJob.getLocation());
 			}
 			
-			if(updatedJob.getSalary() != 0) {
+			if(updatedJob.getSalary() != null) {
 				job.setSalary(updatedJob.getSalary());
 			}
 			
