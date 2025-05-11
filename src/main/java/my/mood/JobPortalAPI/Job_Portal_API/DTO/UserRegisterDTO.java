@@ -1,24 +1,28 @@
 package my.mood.JobPortalAPI.Job_Portal_API.DTO;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class UserDTO {
+public class UserRegisterDTO {
 	
-	@Size(min = 5, message = "Name cannot less than 5 characters!")
+	@NotBlank(message = "Name cannot be empty!")
+	@Size(min = 5, message = "Name cannot be less than 5 characters!")
 	private String name;
 	
-	@Size(min = 8, message = "Password cannot less than 8 characters!")
-	private String password;
-	
+	@NotBlank(message = "Email cannot be empty!")
 	@Email(message = "Email should be valid!")
 	private String email;
 	
-	public UserDTO() {
+	@NotBlank(message = "Password cannot be empty!")
+	@Size(min = 8, message = "Password must contains atleast 8 characters!")
+	private String password;
+	
+	public UserRegisterDTO() {
 		
 	}
 
-	public UserDTO(String name, String password, String email) {
+	public UserRegisterDTO(String name, String password, String email) {
 		super();
 		this.name = name;
 		this.password = password;
