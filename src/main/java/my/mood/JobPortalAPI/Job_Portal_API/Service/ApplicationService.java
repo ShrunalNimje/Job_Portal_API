@@ -2,13 +2,14 @@ package my.mood.JobPortalAPI.Job_Portal_API.Service;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.ApplicationResponseDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.ApplyJobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Status;
@@ -34,14 +35,27 @@ public class ApplicationService {
 		this.userRepository = userRepository;
 	}
 	
+	public ApplicationResponseDTO ApplicationResponseDto(Application_Entity appEntity) {
+		ApplicationResponseDTO dto = new ApplicationResponseDTO();
+		
+		dto.setJob(appEntity.getJob());
+		dto.setStatus(appEntity.getStatus());
+		dto.setUser(appEntity.getUser());
+		
+		return dto;
+	}
+	
 	// get all applications
-	public Page<Application_Entity> retrieveAllApplications(Pageable pageable) {
-		return repository.findAll(pageable);
+	public Page<ApplicationResponseDTO> retrieveAllApplications(Pageable pageable) {
+		return repository.findAll(pageable)
+				.map(this::ApplicationResponseDto);
 	}
 	
 	// get an applications by provided id
-	public Optional<Application_Entity> retrieveApplicationById(int id) {
-		return repository.findById(id);
+	public ApplicationResponseDTO retrieveApplicationById(int id) {
+		Application_Entity application = repository.findById(id)
+				.orElseThrow(()-> new RuntimeException("Application not found!"));
+		return ApplicationResponseDto(application);
 	}
 	
 	// Get applications for a specific job
@@ -61,7 +75,7 @@ public class ApplicationService {
     }
 	
 	// Apply for job
-	public ResponseEntity<String> applyForJob(Application_Entity application, Principal principal) {
+	public ResponseEntity<String> applyForJob(ApplyJobDTO application, Principal principal) {
 		
 		Job_Entity job = jobRepository.findById(application.getJob().getId())
 				.orElseThrow(() -> new RuntimeException("Job not found!"));
@@ -69,12 +83,14 @@ public class ApplicationService {
 		User_Entity user  = userRepository.findByEmail(principal.getName())
 				.orElseThrow(() -> new RuntimeException("User not found!"));
 		
-			application.setJob(job);
-			application.setUser(user);
-			application.setStatus(Application_Status.APPLIED);
-			repository.save(application);
+		Application_Entity appEntity = new Application_Entity();
+		appEntity.setJob(job);
+		appEntity.setUser(user);
+		appEntity.setStatus(Application_Status.APPLIED);
+
+		repository.save(appEntity);
 		
-		return ResponseEntity.ok("Applied for job successfully with id = " + application.getId());
+		return ResponseEntity.ok("Applied for job successfully with id = " + appEntity.getId());
 	}
 	
 	// Update application status

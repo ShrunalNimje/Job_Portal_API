@@ -1,7 +1,5 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserDTO;
-import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserLoginDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserRegisterDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserResponseDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserUpdateDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.UserService;
 
 @RestController
@@ -37,7 +37,7 @@ public class UserController {
 	@Operation(summary = "Retrieve all users", description = "Get all list of users with thier roles")
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/users/")
-	public Page<User_Entity> getAllUsers(Pageable pageable) {
+	public Page<UserResponseDTO> getAllUsers(Pageable pageable) {
 		return service.retrieveAllUsers(pageable);
 	}
 	
@@ -45,7 +45,7 @@ public class UserController {
 	@Operation(summary = "Retrieve an user", description = "Get an user provided by unique id")
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@GetMapping("/user/{id}/")
-	public Optional<User_Entity> getUserById(@Valid @PathVariable int id) {
+	public UserResponseDTO getUserById(@Valid @PathVariable int id) {
 		return service.retrieveUserById(id);
 	}
 	
@@ -69,14 +69,14 @@ public class UserController {
 	@Operation(summary = "Update an user", description = "Update an user provided by unique id")
 	@PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
 	@PutMapping("/user/update/{id}/")
-	public ResponseEntity<String> updateUser(@Valid @RequestBody UserDTO user, @Valid @PathVariable int id) {
+	public ResponseEntity<String> updateUser(@Valid @RequestBody UserUpdateDTO user, @Valid @PathVariable int id) {
 		return service.updateUserById(user, id);
 	}
 	
 	// Register a new user
 	@Operation(summary = "Register a new user", description = "Register a new user provided by unique id, name, email, password and role based access")
 	@PostMapping("/register/user/")
-	public ResponseEntity<String> registerUser(@Valid @RequestBody User_Entity user) {
+	public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegisterDTO user) {
 		return service.registerUser(user);
 	}
 	
@@ -84,7 +84,7 @@ public class UserController {
 	@Operation(summary = "View user profile", description = "View user profile by authentication")
 	@PreAuthorize("isAuthenticated()")
     @GetMapping("/user/profile/")
-    public User_Entity getUserProfile() {
+    public UserResponseDTO getUserProfile() {
         return service.getLoggedInProfile();
     }
 
@@ -92,14 +92,14 @@ public class UserController {
 	@Operation(summary = "Update user profile", description = "Update user profile by authentication")
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/user/profile/update/")
-    public ResponseEntity<String> updateUserProfile(@Valid @RequestBody UserDTO updatedUser) {
+    public ResponseEntity<String> updateUserProfile(@Valid @RequestBody UserUpdateDTO updatedUser) {
         return service.updateUser(updatedUser);
     }
 	
 	// login user
 	@Operation(summary = "Login an user", description = "Login an user by giving right credentials")
 	@PostMapping("/login/")
-	public ResponseEntity<String> login(@RequestBody UserDTO user) {
+	public ResponseEntity<String> login(@RequestBody UserLoginDTO user) {
 		String token = service.verify(user);
 		return ResponseEntity.ok(token);
 	}

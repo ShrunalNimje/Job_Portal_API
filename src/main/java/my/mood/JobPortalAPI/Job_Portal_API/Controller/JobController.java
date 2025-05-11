@@ -1,7 +1,6 @@
 package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
 import java.security.Principal;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobDTO;
-import my.mood.JobPortalAPI.Job_Portal_API.Entity.Job_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobPostDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobResponseDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.JobUpdateDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Service.JobService;
 
 @RestController
@@ -37,14 +37,14 @@ public class JobController {
 	// Retrieve All jobs
 	@Operation(summary = "Retrieve all jobs", description = "Get all list of jobs posted by employer")
 	@GetMapping("/jobs/")
-	public Page<Job_Entity> getAllJobs(Pageable pageable) {
+	public Page<JobResponseDTO> getAllJobs(Pageable pageable) {
 		return service.retrieveAllJobs(pageable);
 	}
 	
 	// Retrieve a job by id
 	@Operation(summary = "Retrieve a job", description = "Get a job provided by job id")
 	@GetMapping("/jobs/{id}/")
-	public Optional<Job_Entity> getJobById(@Valid @PathVariable int id) {
+	public JobResponseDTO getJobById(@Valid @PathVariable int id) {
 		return service.retrieveJobById(id);
 	}
 	
@@ -52,7 +52,7 @@ public class JobController {
 	@Operation(summary = "Post a job", description = "post a job by employer or admin")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PostMapping("/job/")
-	public ResponseEntity<String> postJob(@Valid @RequestBody Job_Entity job, Principal principal) {
+	public ResponseEntity<String> postJob(@Valid @RequestBody JobPostDTO job, Principal principal) {
 		return service.postJob(job, principal);
 	}
 	
@@ -76,7 +76,7 @@ public class JobController {
 	@Operation(summary = "Update a job", description = "Update a job provided by job id")
 	@PreAuthorize("hasRole('EMPLOYER') or hasRole('ADMIN')")
 	@PutMapping("/job/update/{id}/")
-	public ResponseEntity<String> updateJob(@Valid @RequestBody JobDTO job, @Valid @PathVariable int id) {
+	public ResponseEntity<String> updateJob(@Valid @RequestBody JobUpdateDTO job, @Valid @PathVariable int id) {
 		return service.updateJob(job, id);
 	}
 	

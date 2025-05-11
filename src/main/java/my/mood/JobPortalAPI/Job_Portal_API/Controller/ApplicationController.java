@@ -2,7 +2,6 @@ package my.mood.JobPortalAPI.Job_Portal_API.Controller;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.ApplicationResponseDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.ApplyJobDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.DTO.StatusDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.Application_Entity;
 import my.mood.JobPortalAPI.Job_Portal_API.Security.CustomUserDetails;
@@ -40,14 +41,14 @@ public class ApplicationController {
 	// Retrieve All applications
 	@Operation(summary = "Retrieve all applications", description = "Get all list of applications applied by job seeker")
 	@GetMapping("/applications/")
-	public Page<Application_Entity> getAllApplications(Pageable pageable) {
+	public Page<ApplicationResponseDTO> getAllApplications(Pageable pageable) {
 		return service.retrieveAllApplications(pageable);
 	}
 	
 	// Retrieve an application by id
 	@Operation(summary = "Retrieve an application", description = "Get an application provided by application id")
 	@GetMapping("/applications/{id}/")
-	public Optional<Application_Entity> getApplicationById(@Valid @PathVariable int id) {
+	public ApplicationResponseDTO getApplicationById(@Valid @PathVariable int id) {
 		return service.retrieveApplicationById(id);
 	}
 	
@@ -79,7 +80,7 @@ public class ApplicationController {
 	@Operation(summary = "Apply for job", description = "Post an application or apply for job provided by user id and job id")
 	@PreAuthorize("hasRole('JOB_SEEKER')")
 	@PostMapping("/application/apply/")
-	public ResponseEntity<String> applyForApplication(@Valid @RequestBody Application_Entity application, Principal principal) {
+	public ResponseEntity<String> applyForApplication(@Valid @RequestBody ApplyJobDTO application, Principal principal) {
 		return service.applyForJob(application, principal);
 	}
 	

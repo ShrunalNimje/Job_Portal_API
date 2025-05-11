@@ -14,8 +14,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserLoginDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserRegisterDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserResponseDTO;
+import my.mood.JobPortalAPI.Job_Portal_API.DTO.UserUpdateDTO;
 import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Entity;
+import my.mood.JobPortalAPI.Job_Portal_API.Entity.User_Role;
 import my.mood.JobPortalAPI.Job_Portal_API.Repository.UserRepository;
 import my.mood.JobPortalAPI.Job_Portal_API.Exception.UserNotFoundException;
 
@@ -42,14 +46,29 @@ public class UserService {
 		this.jwtService = jwtService;
 	}
 	
+	public UserResponseDTO UserResponseDto(User_Entity user) {
+		
+		UserResponseDTO dto = new UserResponseDTO();
+	    dto.setId(user.getId());
+	    dto.setName(user.getName());
+	    dto.setEmail(user.getEmail());
+	    dto.setRole(user.getRole());
+
+	    return dto;
+	}
+
 	// get all users
-	public Page<User_Entity> retrieveAllUsers(Pageable pageable) {
-		return repository.findAll(pageable);
+	public Page<UserResponseDTO> retrieveAllUsers(Pageable pageable) {
+		return repository.findAll(pageable)
+				.map(this::UserResponseDto);
 	}
 	
 	// get an user by provided id
-	public Optional<User_Entity> retrieveUserById(int id) {
-		return repository.findById(id);
+	public UserResponseDTO retrieveUserById(int id) {
+		User_Entity user = repository.findById(id)
+				.orElseThrow(()-> new UserNotFoundException("User not found!"));
+		
+		return UserResponseDto(user);
 	}
 	
 	// delete all users
@@ -71,35 +90,30 @@ public class UserService {
 	}
 	
 	// update an user by provided id
-	public ResponseEntity<String> updateUserById(UserDTO updatedUser, int id) {
+	public ResponseEntity<String> updateUserById(UserUpdateDTO updatedUser, int id) {
 		
-		Optional<User_Entity> existingUser = retrieveUserById(id);
+		retrieveUserById(id);
 		
-		if(existingUser.isPresent()) {
-			User_Entity user = existingUser.get();
-			
-			user.setId(id);
-			
-			if(updatedUser.getName() != null) {
-				user.setName(updatedUser.getName());
-			}
-			
-			if(updatedUser.getPassword() != null) {
-				user.setPassword(encoder.encode(updatedUser.getPassword()));
-			}
-			
-			repository.save(user);
-			
-			return ResponseEntity.ok("User updated successfully with id = " + id);
+		User_Entity user = repository.findById(id).get();
+		
+		user.setId(id);
+		
+		if(updatedUser.getName() != null) {
+			user.setName(updatedUser.getName());
 		}
 		
-		else {
-			throw new UserNotFoundException("User not found with id = " + id);
+		if(updatedUser.getPassword() != null) {
+			user.setPassword(encoder.encode(updatedUser.getPassword()));
 		}
+		
+		repository.save(user);
+		
+		return ResponseEntity.ok("User updated successfully with id = " + id);
+		
 	}
 	
 	// update logged in user profile
-	public ResponseEntity<String> updateUser(UserDTO updatedUser) {
+	public ResponseEntity<String> updateUser(UserUpdateDTO updatedUser) {
 		
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		User_Entity user = repository.findByEmail(email)
@@ -119,16 +133,16 @@ public class UserService {
 	}
 	
 	// get Logged in user profile
-	public User_Entity getLoggedInProfile() {
+	public UserResponseDTO getLoggedInProfile() {
 		String email = SecurityContextHolder.getContext().getAuthentication().getName();
 		User_Entity user = repository.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("User not found!"));
 		
-		return user;
+		return UserResponseDto(user);
 	}
 	
 	// register a new user
-	public ResponseEntity<String> registerUser(User_Entity user) {
+	public ResponseEntity<String> registerUser(UserRegisterDTO user) {
 		
 		Optional<User_Entity> existingUser = repository.findByEmail(user.getEmail());
 		
@@ -139,7 +153,7 @@ public class UserService {
 		User_Entity newUser = new User_Entity();
 		newUser.setEmail(user.getEmail());
 		newUser.setName(user.getName());
-		newUser.setRole(user.getRole());
+		newUser.setRole(User_Role.JOB_SEEKER);
 		newUser.setPassword(encoder.encode(user.getPassword()));
 		repository.save(newUser);
 		
@@ -147,7 +161,7 @@ public class UserService {
 	}
 	
 	// Login an user
-	public String verify(UserDTO user) {
+	public String verify(UserLoginDTO user) {
 		Authentication authentication = authManager.authenticate(
 				new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())); 
 		
